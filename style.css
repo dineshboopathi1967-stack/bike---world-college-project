@@ -1,0 +1,1700 @@
+/* =========================================
+   1. GLOBAL RESET & BASE STYLES
+   ========================================= */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Segoe UI', sans-serif;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  min-height: 100vh;
+}
+
+/* =========================================
+   2. LAYOUT & CONTAINERS
+   ========================================= */
+.container {
+  width: 100%;
+  margin: auto;
+  background: transparent;
+  position: relative;
+  z-index: 20;
+  padding-bottom: 0;
+}
+
+.main-layout {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 20px;
+  align-items: start;
+}
+
+/* =========================================
+   3. HEADER & NAVIGATION
+   ========================================= */
+header {
+  background: linear-gradient(135deg, #1e3c72, #2a5298);
+  padding: 20px 30px;
+  color: white;
+}
+
+.header-content {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.menu-btn {
+  font-size: 24px;
+  background: rgba(255, 255, 255, 0.15);
+  border: none;
+  color: rgb(247, 244, 244);
+  padding: 10px 15px;
+  border-radius: 14px;
+  cursor: pointer;
+}
+
+.search-container {
+  flex: 1;
+  position: relative;
+  display: flex;
+}
+
+.search-input {
+  width: 100%;
+  padding: 12px 45px 12px 45px;
+  border-radius: 30px;
+  border: none;
+  background: rgba(255, 255, 255, 0.15);
+  color: white;
+}
+
+.search-input::placeholder {
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.search-icon {
+  position: absolute;
+  left: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+}
+
+.clear-search {
+  position: absolute;
+  right: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+  color: #a0aab2;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.3s;
+}
+
+.clear-search:hover {
+  color: white;
+}
+
+/* =========================================
+   4. SIDEBAR MENU
+   ========================================= */
+.sidebar {
+  position: fixed;
+  top: 0;
+  left: -300px;
+  width: 200px;
+  height: 100vh;
+  background: linear-gradient(135deg, #4e04c5, #2a5298);
+  color: white;
+  padding: 20px;
+  transition: 0.4s;
+  z-index: 2000;
+}
+
+.sidebar.active {
+  left: 0;
+}
+
+.sidebar button {
+  background: none;
+  border: none;
+  font-size: 28px;
+  color: white;
+  cursor: pointer;
+}
+
+.sidebar ul {
+  list-style: none;
+  margin-top: 30px;
+}
+
+.sidebar li {
+  padding: 15px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+  cursor: pointer;
+}
+
+.sidebar-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  opacity: 0;
+  visibility: hidden;
+  transition: 0.4s;
+  z-index: 1500;
+}
+
+.sidebar-overlay.active {
+  opacity: 1;
+  visibility: visible;
+}
+
+.menu-item {
+  padding: 18px 25px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border-left: 4px solid transparent;
+}
+
+.menu-item:hover {
+  padding-left: 35px;
+  background: rgba(255, 255, 255, 0.1);
+  border-left-color: gold;
+}
+
+/* =========================================
+   5. FILTERS (SEARCH & BRAND)
+   ========================================= */
+.filters {
+  background: #086ed4;
+  padding: 25px;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 15px;
+}
+
+.filter-input,
+.filter-select {
+  padding: 12px;
+  border-radius: 12px;
+  border: 2px solid #dee2e6;
+}
+
+.brand-filter {
+  background: #e8eaec;
+  padding: 20px;
+  border-radius: 16px;
+  display: none;
+  align-self: start;
+  position: sticky;
+  top: 20px;
+}
+
+.brand-filter h3 {
+  margin-bottom: 10px;
+  border: 1px solid black;
+  padding: 4px 8px;
+  border-radius: 8px;
+  background-color: #ddd6e2;
+}
+
+.brand-filter ul {
+  list-style: none;
+}
+
+.brand-filter ul li {
+  padding: 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.brand-filter ul li:hover {
+  background: #ee7605;
+}
+
+/* =========================================
+   NEW MODERN BRAND GRID
+   ========================================= */
+.modern-brand-filter {
+  width: 100%;
+  margin-bottom: 30px;
+  background: transparent;
+}
+
+.modern-brand-filter h2 {
+  color: white;
+  font-size: 24px;
+  font-weight: 500;
+  margin-bottom: 20px;
+}
+
+.filter-tabs {
+  display: flex;
+  gap: 30px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  margin-bottom: 20px;
+}
+
+.filter-tabs span {
+  color: #a0aab2;
+  font-size: 14px;
+  font-weight: bold;
+  padding-bottom: 10px;
+  cursor: pointer;
+  position: relative;
+  text-transform: uppercase;
+  transition: color 0.3s;
+}
+
+.filter-tabs span:hover {
+  color: white;
+}
+
+.filter-tabs span.active {
+  color: #38bdf8;
+}
+
+.filter-tabs span.active::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  width: 100%;
+  height: 3px;
+  background: #38bdf8;
+  border-radius: 3px 3px 0 0;
+}
+
+.brand-grid-wrapper {
+  background: transparent;
+}
+
+.brand-grid-container {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  background: #151a25;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+.brand-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background: #151a25;
+  border-right: 1px solid rgba(255, 255, 255, 0.1);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.brand-card:nth-child(5n) {
+  border-right: none;
+}
+
+.brand-card:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.brand-card.active-brand {
+  background: rgba(56, 189, 248, 0.15);
+  /* light blue glow */
+  border: 1px solid #38bdf8;
+  transform: scale(1.02);
+  box-shadow: inset 0 0 15px rgba(56, 189, 248, 0.3);
+}
+
+.brand-card img {
+  height: 48px;
+  object-fit: contain;
+  margin-bottom: 15px;
+  background: white;
+  border-radius: 6px;
+  padding: 5px;
+  width: 80%;
+  max-width: 100px;
+}
+
+.brand-card span {
+  color: #fff;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.view-more-brands-btn {
+  text-align: center;
+  padding: 15px;
+  background: #151a25;
+  color: #38bdf8;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  border-radius: 0 0 16px 16px;
+  margin-top: -1px;
+  /* overlap border */
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-top: none;
+  transition: 0.3s;
+}
+
+.view-more-brands-btn:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+/* =========================================
+   6. BIKE SHOWCASE LOGIC (GRID)
+   ========================================= */
+.bike-section {
+  padding: 40px 30px;
+  background: linear-gradient(160deg, #0f172a 0%, #1e293b 50%, #0f1f3d 100%);
+  border-radius: 0;
+}
+
+.section-title {
+  text-align: center;
+  font-size: 32px;
+  margin-bottom: 30px;
+  color: #ffffff;
+  background: linear-gradient(90deg, #ffd700, #ffffff, #ffd700);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  letter-spacing: 2px;
+  background-size: 200% auto;
+  animation: shine 3s linear infinite;
+}
+
+.bike-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 25px;
+}
+
+.bike {
+  background: linear-gradient(145deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.02));
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 215, 0, 0.18);
+  border-radius: 24px;
+  padding: 22px;
+  cursor: pointer;
+  height: fit-content;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.35s cubic-bezier(0.23, 1, 0.32, 1);
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+.bike::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 24px;
+  background: linear-gradient(135deg, rgba(255, 215, 0, 0.08) 0%, transparent 60%);
+  pointer-events: none;
+}
+
+.bike h3 {
+  color: #f1f5f9;
+  font-size: 16px;
+  margin-bottom: 10px;
+  font-weight: 700;
+  letter-spacing: 0.4px;
+}
+
+.bike p {
+  color: #94a3b8;
+  font-size: 13.5px;
+  margin-bottom: 5px;
+}
+
+.bike:hover {
+  transform: translateY(-10px) scale(1.02);
+  border-color: rgba(255, 215, 0, 0.55);
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.5), 0 0 28px rgba(255, 215, 0, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.12);
+}
+
+.bike-image {
+  height: 180px;
+  border-radius: 16px;
+  background: linear-gradient(145deg, rgba(255, 255, 255, 0.95), rgba(241, 245, 249, 0.9));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 60px;
+  margin-bottom: 15px;
+  overflow: hidden;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+  transition: transform 0.35s ease;
+}
+
+.bike:hover .bike-image {
+  transform: scale(1.04);
+}
+
+/* =========================================
+   7. MODAL ELEMENTS
+   ========================================= */
+.modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.8);
+  z-index: 2500;
+  backdrop-filter: blur(8px);
+  align-items: center;
+  justify-content: center;
+}
+
+.modal.show {
+  display: flex !important;
+}
+
+.modal-content {
+  background: WHITE;
+  border-radius: 24px;
+  width: 90%;
+  max-width: 800px;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  font-size: 28px;
+  cursor: pointer;
+  color: #64748b;
+}
+
+/* Slide Modal Images */
+.modal-image-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: white;
+  border-radius: 20px;
+  margin: 15px 0;
+  overflow: hidden;
+  min-height: 280px;
+  box-shadow: inset 0 0 10px rgba(255, 253, 253, 0.911);
+}
+
+#modalMainImg {
+  max-width: 100%;
+  max-height: 260px;
+  object-fit: contain;
+  transition: 0.3s;
+}
+
+.slider-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(105, 104, 104, 0.4);
+  color: rgb(255, 254, 254);
+  border: none;
+  width: 45px;
+  height: 45px;
+  border-radius: 50%;
+  cursor: pointer;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  transition: all 0.3s ease;
+}
+
+.slider-btn:hover {
+  background: #086ed4;
+  transform: translateY(-50%) scale(1.1);
+}
+
+.prev {
+  left: 15px;
+}
+
+.next {
+  right: 15px;
+}
+
+/* =========================================
+   8. SPECIFICATIONS CARDS
+   ========================================= */
+.bike-detail {
+  padding: 10px 5px;
+}
+
+.highlight-title {
+  font-size: 20px;
+  margin-bottom: 10px;
+}
+
+.highlight-card {
+  border: 1px solid #e5e7eb;
+  border-radius: 14px;
+  overflow: hidden;
+}
+
+.highlight-card .row {
+  display: flex;
+  justify-content: space-between;
+  padding: 14px 16px;
+  border-bottom: 1px solid #e5e7eb;
+  font-size: 15px;
+}
+
+.highlight-card .row:last-child {
+  border-bottom: none;
+}
+
+.highlight-card span {
+  color: #475569;
+}
+
+.more-details {
+  margin-top: 15px;
+}
+
+.more-btn {
+  background: none;
+  border: none;
+  color: #2563eb;
+  font-size: 15px;
+  cursor: pointer;
+  padding: 10px 0;
+}
+
+.more-content {
+  display: none;
+  padding-top: 10px;
+  font-size: 14px;
+  color: #334155;
+}
+
+.more-content p {
+  margin-bottom: 6px;
+}
+
+.spec-section-title {
+  margin: 20px 0 10px;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.accordion {
+  border-top: 1px solid #e5e7eb;
+}
+
+.acc-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 14px 0;
+  font-weight: 500;
+  cursor: pointer;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.acc-content {
+  display: none;
+  padding: 10px 0 15px;
+  font-size: 14px;
+  color: #475569;
+}
+
+.spec-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 12px 0;
+  border-bottom: 1px solid #e5e7eb;
+  font-size: 14px;
+}
+
+.spec-row span:last-child {
+  font-weight: 600;
+}
+
+.view-more {
+  color: #2563eb;
+  font-weight: 600;
+  padding: 12px 0;
+  cursor: pointer;
+}
+
+/* =========================================
+   9. PDF & DOWNLOADING OPTIONS
+   ========================================= */
+.download-container {
+  display: flex;
+  justify-content: flex-end;
+  padding: 20px 0 10px;
+  border-top: 1px dashed #ddd;
+  margin-top: 20px;
+}
+
+.pdf-link {
+  color: #e63946;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 14px;
+  border: 1px solid #e63946;
+  padding: 8px 16px;
+  border-radius: 8px;
+  transition: 0.3s;
+}
+
+.pdf-link:hover {
+  background: #e63946;
+  color: white;
+  box-shadow: 0 4px 12px rgba(230, 57, 70, 0.2);
+}
+
+/* =========================================
+   10. FULL SCREEN IMAGE VIEWER
+   ========================================= */
+.image-viewer-overlay {
+  display: none !important;
+  position: fixed;
+  z-index: 11000;
+  inset: 0;
+  background: #ffffff;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.image-viewer-overlay.active {
+  display: flex !important;
+}
+
+.image-viewer-overlay img {
+  max-width: 95%;
+  max-height: 95%;
+  object-fit: contain;
+  border-radius: 10px;
+  box-shadow: 0 0 30px rgba(255, 255, 255, 0.2);
+  animation: zoomIn 0.3s ease;
+}
+
+@keyframes zoomIn {
+  from {
+    transform: scale(0.7);
+    opacity: 0;
+  }
+
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+#fullImage {
+  max-width: 100vw !important;
+  max-height: 100vh !important;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  z-index: 11005;
+  margin: 0;
+  padding: 0;
+}
+
+/* Navigation Overlay Zones */
+.nav-zone {
+  position: absolute;
+  top: 0;
+  height: 100%;
+  width: 35%;
+  z-index: 11010;
+  cursor: pointer;
+}
+
+.left-zone {
+  left: 0;
+}
+
+.right-zone {
+  right: 0;
+}
+
+.viewer-close-btn {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  background: rgb(255, 255, 255);
+  color: rgb(27, 27, 27);
+  border: none;
+  width: 45px;
+  height: 45px;
+  border-radius: 50%;
+  font-size: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 11025;
+  transition: 0.3s;
+}
+
+
+
+.viewer-top-btn {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  background: rgba(0, 0, 0, 0.05);
+  color: #333;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 6px;
+  font-weight: bold;
+  cursor: pointer;
+  z-index: 11020;
+  transition: 0.3s;
+}
+
+.viewer-top-btn:hover {
+  background: #e8eaec;
+}
+
+/* Image Toolbar UI */
+#viewerColorContainer {
+  position: absolute;
+  bottom: 50px;
+  display: flex;
+  gap: 15px;
+  padding: 15px 30px;
+  background: #f8f9fa;
+  border-radius: 8px;
+  z-index: 11011;
+  align-items: center;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+
+.color-swatch {
+  width: 42px !important;
+  height: 42px !important;
+  border-radius: 6px !important;
+  cursor: pointer !important;
+  position: relative !important;
+  transition: all 0.3s ease !important;
+  border: 1px solid rgba(0, 0, 0, 0.1) !important;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
+  overflow: hidden !important;
+  display: inline-block !important;
+  margin: 0 5px !important;
+}
+
+.color-swatch.active {
+  transform: scale(1.1) !important;
+  outline: 2px solid #000 !important;
+  outline-offset: 2px !important;
+  border: 2px solid #fff !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2) !important;
+}
+
+.color-swatch::after {
+  content: '' !important;
+  position: absolute !important;
+  inset: 0 !important;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.2) 0%, rgba(255, 255, 255, 0) 100%) !important;
+  pointer-events: none !important;
+}
+
+.colour-count {
+  position: absolute;
+  bottom: 20px;
+  right: 40px;
+  font-size: 14px;
+  color: #888;
+  font-weight: 500;
+  z-index: 11012;
+}
+
+.viewer-download-btn {
+  position: absolute;
+  bottom: 50px;
+  right: 30px;
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid #ddd;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  cursor: pointer;
+  z-index: 11020;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  transition: 0.3s;
+}
+
+.viewer-download-btn:hover {
+  transform: scale(1.1);
+  background: #fff;
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+}
+
+/* =========================================
+   11. FOOTER SECTION 
+   ========================================= */
+.pro-footer {
+  background: linear-gradient(135deg, #1e3c72, #2a5298);
+  color: white;
+  padding: 60px 0 30px;
+  margin-top: 0;
+  position: relative;
+  z-index: 10;
+}
+
+/* .container rules are merged above — see line 19 */
+
+.footer-container {
+  max-width: 1200px;
+  margin: auto;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 40px;
+  padding: 0 20px;
+}
+
+.footer-section h3 {
+  color: #ffd700;
+  font-size: 18px;
+  margin-bottom: 20px;
+  letter-spacing: 1px;
+}
+
+.footer-section p {
+  font-size: 14px;
+  line-height: 1.6;
+  color: #e0e0e0;
+}
+
+.footer-section ul {
+  list-style: none;
+}
+
+.footer-section ul li {
+  margin-bottom: 12px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: 0.3s;
+  color: #e0e0e0;
+}
+
+.footer-section ul li:hover {
+  color: #ffd700;
+  padding-left: 5px;
+}
+
+.footer-bottom {
+  text-align: center;
+  margin-top: 40px;
+  padding-top: 20px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  font-size: 12px;
+  color: #bbb;
+}
+
+.social-icons span {
+  font-size: 24px;
+  margin-right: 15px;
+  cursor: pointer;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+}
+
+/* =========================================
+   12. SPLASH SCREEN (LOADER) 
+   ========================================= */
+.modern-splash {
+  position: fixed;
+  inset: 0;
+  background: #0f172a;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 99999;
+}
+
+.glass-loader {
+  padding: 60px 70px;
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(15px);
+  border-radius: 30px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  text-align: center;
+  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
+  min-width: 320px;
+}
+
+.splash-icon {
+  font-size: 64px;
+  margin-bottom: 20px;
+  animation: bounceBike 1.2s ease infinite alternate;
+}
+
+@keyframes bounceBike {
+  from { transform: translateY(0px); }
+  to   { transform: translateY(-12px); }
+}
+
+.splash-welcome {
+  color: #94a3b8;
+  font-size: 15px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+
+.reveal-text {
+  color: white;
+  font-size: 36px;
+  letter-spacing: 8px;
+  margin-top: 4px;
+  margin-bottom: 12px;
+  background: linear-gradient(to right, #fff, #ffd700, #fff);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-size: 200% auto;
+  animation: shine 2s linear infinite;
+}
+
+.tagline {
+  color: #94a3b8;
+  font-size: 13px;
+  margin-top: 6px;
+  margin-bottom: 28px;
+  letter-spacing: 1px;
+}
+
+.splash-bar {
+  width: 100%;
+  height: 3px;
+  background: rgba(255,255,255,0.1);
+  border-radius: 3px;
+  overflow: hidden;
+  margin-top: 10px;
+}
+
+.splash-fill {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, #ffd700, #fff);
+  border-radius: 3px;
+  animation: fillBar 2.2s ease forwards;
+}
+
+@keyframes fillBar {
+  from { width: 0%; }
+  to   { width: 100%; }
+}
+
+@keyframes shine {
+  to {
+    background-position: 200% center;
+  }
+}
+
+/* =========================================
+   13. RESPONSIVE QUERIES
+   ========================================= */
+@media(max-width: 1024px) {
+  .bike-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media(max-width: 600px) {
+  .brand-grid-container {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .brand-card:nth-child(5n) {
+    border-right: 1px solid rgba(255, 255, 255, 0.1);
+  }
+  .brand-card:nth-child(2n) {
+    border-right: none;
+  }
+}
+
+@media(max-width: 768px) {
+  .filters {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media(max-width: 600px) {
+  .bike-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media(max-width: 480px) {
+  .filters {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* =========================================
+   14. INNOVATIVE FEATURES (TCO)
+   ========================================= */
+
+
+
+/* Engine Revving Button Animation */
+@keyframes shake {
+  0% {
+    transform: translateX(0);
+  }
+
+  25% {
+    transform: translateX(-2px) rotate(-1deg);
+  }
+
+  50% {
+    transform: translateX(2px) rotate(1deg);
+  }
+
+  75% {
+    transform: translateX(-2px) rotate(-1deg);
+  }
+
+  100% {
+    transform: translateX(0);
+  }
+}
+
+.revving,
+.shake-active {
+  animation: shake 0.2s infinite;
+  background: #dc2626 !important;
+}
+
+/* =========================================
+   14. HERO VIDEO BANNER
+   ========================================= */
+.hero-video-section {
+  width: 100%;
+  position: relative;
+  overflow: hidden;
+}
+
+.hero-video-wrapper {
+  position: relative;
+  width: 100%;
+  height: 520px;
+  overflow: hidden;
+}
+
+.hero-video-bg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  z-index: 1;
+}
+
+/* Dark cinematic gradient overlay */
+.hero-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg,
+      rgba(0, 0, 0, 0.80) 0%,
+      rgba(0, 0, 0, 0.50) 50%,
+      rgba(0, 0, 0, 0.85) 100%);
+  z-index: 2;
+}
+
+/* Centered text content */
+.hero-content {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 0 20px;
+  animation: heroFadeIn 1.2s ease forwards;
+}
+
+@keyframes heroFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.hero-tagline {
+  font-size: 13px;
+  letter-spacing: 4px;
+  color: #ffd700;
+  text-transform: uppercase;
+  margin-bottom: 14px;
+  font-weight: 700;
+  opacity: 0.9;
+}
+
+.hero-title {
+  font-size: clamp(36px, 6vw, 72px);
+  font-weight: 900;
+  color: #ffffff;
+  line-height: 1.1;
+  margin-bottom: 16px;
+  text-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
+}
+
+.hero-highlight {
+  background: linear-gradient(90deg, #ffd700, #ff8c00);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.hero-subtitle {
+  font-size: 16px;
+  color: rgba(255, 255, 255, 0.80);
+  letter-spacing: 1px;
+  margin-bottom: 32px;
+}
+
+.hero-cta {
+  background: linear-gradient(135deg, #ffd700, #ff8c00);
+  color: #000;
+  border: none;
+  padding: 16px 42px;
+  border-radius: 50px;
+  font-size: 16px;
+  font-weight: 800;
+  cursor: pointer;
+  letter-spacing: 1px;
+  transition: all 0.3s ease;
+  box-shadow: 0 8px 30px rgba(255, 215, 0, 0.4);
+  text-transform: uppercase;
+}
+
+.hero-cta:hover {
+  transform: translateY(-3px) scale(1.04);
+  box-shadow: 0 14px 40px rgba(255, 215, 0, 0.55);
+}
+
+/* Mute toggle button (bottom-right) */
+.hero-mute-btn {
+  position: absolute;
+  bottom: 20px;
+  right: 20px;
+  z-index: 5;
+  background: rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: white;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  font-size: 20px;
+  cursor: pointer;
+  backdrop-filter: blur(8px);
+  transition: 0.3s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.hero-mute-btn:hover {
+  background: rgba(255, 255, 255, 0.3);
+  transform: scale(1.1);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .hero-video-wrapper {
+    height: 350px;
+  }
+
+  .hero-title {
+    font-size: 36px;
+  }
+
+  .hero-cta {
+    padding: 13px 30px;
+    font-size: 14px;
+  }
+}
+
+/* =========================================
+   11. PREMIUM BIKE MODAL REDESIGN
+   ========================================= */
+.premium-bike-detail {
+  padding: 10px;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Removed heavy price badge styles */
+
+.premium-spec-section {
+  margin-bottom: 30px;
+  background: #ffffff;
+  border-radius: 16px;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+  overflow: hidden;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.premium-spec-section:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 20px -5px rgba(0, 0, 0, 0.1);
+}
+
+.premium-section-title {
+  background: #f8fafc;
+  padding: 16px 20px;
+  margin: 0;
+  font-size: 18px;
+  color: #0f172a;
+  font-weight: 700;
+  border-bottom: 1px solid #e2e8f0;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  letter-spacing: 0.5px;
+}
+
+.section-icon {
+  font-size: 20px;
+  filter: drop-shadow(0 2px 2px rgba(0, 0, 0, 0.1));
+}
+
+.premium-spec-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 16px;
+  padding: 20px;
+  background: #fdfdfd;
+}
+
+.premium-spec-pill {
+  background: #ffffff;
+  border: 1px solid #f1f5f9;
+  border-radius: 12px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+}
+
+.premium-spec-pill::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  background: linear-gradient(to bottom, #1e3c72, #2a5298);
+  border-radius: 4px 0 0 4px;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.premium-spec-pill:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 15px rgba(0, 0, 0, 0.05);
+  border-color: #cbd5e1;
+}
+
+.premium-spec-pill:hover::before {
+  opacity: 1;
+}
+
+.premium-spec-label {
+  font-size: 12px;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-weight: 600;
+}
+
+.premium-spec-value {
+  font-size: 16px;
+  color: #1e293b;
+  font-weight: 700;
+  word-break: break-word;
+}
+
+.modern-btn-download {
+  background: linear-gradient(135deg, #e63946, #c1121f);
+  color: white;
+  padding: 14px 28px;
+  border-radius: 12px;
+  border: none;
+  font-weight: bold;
+  font-size: 15px;
+  cursor: pointer;
+  box-shadow: 0 6px 15px rgba(230, 57, 70, 0.4);
+  transition: all 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modern-btn-download:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 20px rgba(230, 57, 70, 0.6);
+  background: linear-gradient(135deg, #f04e5a, #d81b28);
+}
+
+@media (max-width: 600px) {
+  .premium-spec-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    padding: 15px;
+  }
+
+  .premium-spec-pill {
+    padding: 12px;
+  }
+
+  .price-amount {
+    font-size: 26px;
+  }
+}
+
+/* =========================================
+   11. COMPARE BIKES SELECTOR (MODERN)
+   ========================================= */
+.compare-overlay {
+  background: rgba(10, 10, 10, 0.95) !important;
+  backdrop-filter: blur(8px) !important;
+}
+
+.compare-selector-card {
+  background: #181818;
+  width: 95%;
+  max-width: 1100px;
+  border-radius: 16px;
+  padding: 40px;
+  position: relative;
+  color: #fff;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+  font-family: 'Segoe UI', sans-serif;
+  text-align: left;
+  border: 1px solid #333;
+}
+
+.compare-selector-card h2 {
+  font-size: 28px;
+  font-weight: 700;
+  margin-bottom: 12px;
+  color: #fff;
+}
+
+.compare-subtitle {
+  font-size: 14px;
+  color: #a0aab2;
+  margin-bottom: 40px;
+  line-height: 1.6;
+}
+
+.compare-close {
+  color: #a0aab2;
+  font-size: 30px;
+  position: absolute;
+  top: 20px;
+  right: 25px;
+  transition: 0.3s;
+}
+
+.compare-close:hover {
+  color: #fff;
+}
+
+.compare-slots-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: stretch;
+  background: #121212;
+  border-radius: 12px;
+  border: 1px solid #333;
+  padding: 2px;
+  margin-bottom: 40px;
+  position: relative;
+}
+
+.compare-slot {
+  flex: 1;
+  text-align: center;
+  padding: 40px 10px;
+  cursor: pointer;
+  border-right: 1px solid #333;
+  transition: 0.3s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  min-height: 200px;
+}
+
+.compare-slot:last-child {
+  border-right: none;
+}
+
+.compare-slot:hover {
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.slot-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 15px;
+}
+
+.bike-silhouette {
+  font-size: 50px;
+  opacity: 0.3;
+  filter: grayscale(1);
+}
+
+.add-text {
+  color: #38bdf8;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.vs-badge {
+  position: absolute;
+  background: #e63946;
+  color: white;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: bold;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 10;
+  border: 4px solid #1e1e1e;
+}
+
+/* VS badges positioning */
+.vs-badge:nth-of-type(1) {
+  left: 25%;
+}
+
+.vs-badge:nth-of-type(2) {
+  left: 50%;
+}
+
+.vs-badge:nth-of-type(3) {
+  left: 75%;
+}
+
+.compare-action-btn {
+  background: #ef4444;
+  color: white;
+  border: none;
+  padding: 15px 40px;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.compare-action-btn:hover {
+  background: #dc2626;
+}
+
+/* Selected Bike Slot Styling */
+.selected-bike-slot {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
+
+.selected-bike-slot img {
+  width: 140px;
+  height: 90px;
+  object-fit: contain;
+  margin-bottom: 15px;
+  background: transparent;
+}
+
+.selected-bike-slot span {
+  font-size: 15px;
+  font-weight: 600;
+  color: #fff;
+  text-align: center;
+  line-height: 1.3;
+}
+
+.remove-bike-btn {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  background: rgba(255, 255, 255, 0.1);
+  color: #a0aab2;
+  border: none;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  transition: 0.3s;
+}
+
+.remove-bike-btn:hover {
+  background: #ef4444;
+  color: white;
+}
+
+.selector-bike-item {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding: 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: 0.3s;
+  background: #2d2d2d;
+  border: 1px solid #3d3d3d;
+}
+
+.selector-bike-item:hover {
+  background: #3d3d3d;
+  border-color: #38bdf8;
+}
+
+/* =========================================
+   12. DARK MODE & THEME SWITCH
+   ========================================= */
+.theme-switch {
+  position: relative;
+  display: inline-block;
+  width: 44px;
+  height: 24px;
+}
+
+.theme-switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.theme-slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(255, 255, 255, 0.3);
+  transition: .4s;
+}
+
+.theme-slider:before {
+  position: absolute;
+  content: "";
+  height: 16px;
+  width: 16px;
+  left: 4px;
+  bottom: 4px;
+  background-color: white;
+  transition: .4s;
+}
+
+input:checked+.theme-slider {
+  background-color: #38bdf8;
+}
+
+input:checked+.theme-slider:before {
+  transform: translateX(20px);
+}
+
+.theme-slider.round {
+  border-radius: 24px;
+}
+
+.theme-slider.round:before {
+  border-radius: 50%;
+}
+
+/* Dark Mode Overrides */
+body.dark-theme {
+  background: linear-gradient(135deg, #0f172a, #1e293b);
+  color: #f1f5f9;
+}
+
+body.dark-theme header {
+  background: linear-gradient(135deg, #1e293b, #0f172a);
+}
+
+body.dark-theme .filters,
+body.dark-theme .pro-footer {
+  background: #0f172a;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+body.dark-theme .bike,
+body.dark-theme .modal-content {
+  background: #1e293b;
+  color: #fff;
+}
+
+body.dark-theme .bike h3,
+body.dark-theme .premium-section-title {
+  color: #f1f5f9;
+}
+
+body.dark-theme .premium-spec-pill {
+  background: #0f172a;
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+body.dark-theme .premium-spec-value {
+  color: #f1f5f9;
+}
+
+body.dark-theme .premium-spec-label {
+  color: #94a3b8;
+}
