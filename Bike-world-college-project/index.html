@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="MotoHub - India's Ultimate Bike Platform. Compare specs, explore variants, find your perfect ride. Browse all major bike brands in one place.">
+  <title>MotoHub</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏍️</text></svg>">
+
+  <!-- ================= 1. FONTS & ICONS ================= -->
+  <!-- (Add any Google Fonts or FontAwesome links here if needed in the future) -->
+
+  <!-- ================= 2. STYLESHEETS ================= -->
+  <link rel="stylesheet" href="style.css">
+
+  <!-- ================= 3. EXTERNAL LIBRARIES ================= -->
+  <!-- PDF Export Utilities -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+  <!-- Firebase (Core & Realtime Database) -->
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
+</head>
+
+<body>
+  <!-- ================= SPLASH SCREEN ================= -->
+  <div id="splash-screen" class="modern-splash">
+    <div class="glass-loader">
+      <div class="splash-icon">🏍️</div>
+      <p class="splash-welcome">Welcome to</p>
+      <h2 class="reveal-text">MOTOHUB</h2>
+      <p class="tagline">India's Ultimate Bike Platform</p>
+      <div class="splash-bar"><div class="splash-fill"></div></div>
+    </div>
+  </div>
+
+  <!-- ================= SIDEBAR MENU ================= -->
+  <div class="sidebar-overlay" id="overlay" onclick="toggleMenu()"></div>
+  <nav class="sidebar" id="sidebar">
+    <button onclick="toggleMenu()">MOTOHUB</button>
+    <ul>
+      <li class="menu-item active" onclick="setActiveMenu(this)">🏠 Home</li>
+      <li class="menu-item" onclick="openBikes(this)">🏍 Bike Brands</li>
+      <li class="menu-item" onclick="openCompareFromMenu(this)">⚖️ Compare Bikes</li>
+      <li class="menu-item" onclick="filterByElectric(this)">⚡ Electric Bikes</li>
+      <li class="menu-item dark-mode-item"
+        style="display: flex; justify-content: space-between; align-items: center; padding-right: 25px;"
+        onclick="document.getElementById('darkModeToggle').click()">
+        <span>🌙 Dark Mode</span>
+        <label class="theme-switch" onclick="event.stopPropagation()">
+          <input type="checkbox" id="darkModeToggle" onchange="toggleDarkMode(this)">
+          <span class="theme-slider round"></span>
+        </label>
+      </li>
+    </ul>
+  </nav>
+
+  <!-- ================= FLOATING COMPARE ICON ================= -->
+  <div id="compareIcon" onclick="openCompareModal()" style="display:none; position:fixed; bottom:20px; right:20px; background:#120fc5;
+              color:white; width:65px; height:65px; border-radius:50%; text-align:center; 
+              line-height:65px; font-size:28px; cursor:pointer; z-index:1000; 
+              box-shadow:0 8px 20px rgba(0,0,0,0.3); border:3px solid white;">
+    ⚖️
+    <span id="compareCount" style="position:absolute; top:-5px; right:-5px; background:red; color:white;
+                 border-radius:50%; width:25px; height:25px; font-size:14px; 
+                 line-height:25px; font-weight:bold;">0</span>
+  </div>
+
+  <!-- ================= MAIN APP LAYOUT ================= -->
+  <div class="container">
+
+    <!-- 1. Header (Search & Menu Trigger) -->
+    <header>
+      <div class="header-content">
+        <button class="menu-btn" onclick="toggleMenu()">☰</button>
+        <div class="search-container">
+          <span class="search-icon">🔍</span>
+          <input class="search-input" id="mainSearchInput" placeholder="Search bikes...">
+          <span class="clear-search" id="clearSearchBtn" onclick="clearSearch()" style="display: none;">✖</span>
+        </div>
+        <span id="totalBikeCount" style="
+          color: white;
+          font-size: 13px;
+          font-weight: 700;
+          white-space: nowrap;
+          opacity: 0.85;
+          letter-spacing: 0.5px;
+        "> — Bikes</span>
+      </div>
+    </header>
+
+    <!-- 2. Hero Video Banner -->
+    <section class="hero-video-section">
+      <div class="hero-video-wrapper">
+        <!-- Free royalty-free motorcycle video from Pexels via direct embed -->
+        <video id="heroVideo" class="hero-video-bg" autoplay muted loop playsinline
+          poster="https://images.pexels.com/photos/1119796/pexels-photo-1119796.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1">
+          <!-- Primary source: royalty-free motorcycle video -->
+          <source src="https://videos.pexels.com/video-files/3121459/3121459-uhd_2560_1440_24fps.mp4" type="video/mp4">
+        </video>
+
+        <!-- Dark gradient overlay -->
+        <div class="hero-overlay"></div>
+
+        <!-- Content on top of video -->
+        <div class="hero-content">
+          <p class="hero-tagline">🏍️ INDIA'S ULTIMATE BIKE PLATFORM</p>
+          <h1 class="hero-title">Find Your<br><span class="hero-highlight">Perfect Ride</span></h1>
+          <p class="hero-subtitle">Compare specs · Explore variants · Make your move</p>
+          <button class="hero-cta" onclick="document.querySelector('.filters').scrollIntoView({behavior:'smooth'})">
+            Explore Bikes &nbsp;↓
+          </button>
+        </div>
+
+        <!-- Mute / Unmute toggle -->
+        <button class="hero-mute-btn" id="muteBtn" onclick="toggleHeroMute()" title="Toggle Sound">🔇</button>
+      </div>
+    </section>
+
+    <!-- 2. Global Filters Setup -->
+    <div class="filters">
+      <input class="filter-input" id="brandFilterInput" placeholder="Brand (ex: Honda)">
+      <input class="filter-input" id="priceFilterInput" placeholder="Price (ex: 10000-15000)">
+      <select class="filter-select" id="typeFilter">
+        <option value="">Type</option>
+        <option value="Electric">Electric</option>
+        <option value="Petrol">Petrol</option>
+      </select>
+      <input class="filter-input" id="mileageFilterInput" placeholder="Mileage (ex: 40-50)">
+    </div>
+
+    <!-- 3. Primary Content Grid -->
+    <section class="bike-section">
+      <h2 class="section-title">Featured Bikes</h2>
+      <div class="main-layout">
+
+        <!-- Left Sidebar: Brand Filter Map -->
+        <!-- Modern Horizontal Brand Filter Grid -->
+        <div class="modern-brand-filter" id="modernBrandFilter" style="display:none;">
+          <h2 style="color:white; margin-bottom: 20px; font-weight: 500;">Browse Bikes By</h2>
+          <div class="filter-tabs">
+            <span class="active">BRAND</span>
+          </div>
+
+          <!-- Outer wrap for borders -->
+          <div class="brand-grid-wrapper" id="brandGridWrapper">
+            <div class="brand-grid-container" id="brandGridContainer">
+              <div class="brand-card" onclick="filterByBrand('ROYAL ENFIELD')">
+                <img src="https://imgd.aeplcdn.com/0X0/bw/makes/royal-enfield20200508193112.jpg?q=80"
+                  alt="Royal Enfield">
+                <span>Royal Enfield</span>
+              </div>
+              <div class="brand-card" onclick="filterByBrand('TVS')">
+                <img
+                  src="https://static.vecteezy.com/system/resources/previews/020/336/393/original/tvs-logo-tvs-icon-transparent-png-free-vector.jpg"
+                  alt="TVS">
+                <span>TVS</span>
+              </div>
+              <div class="brand-card" onclick="filterByBrand('BAJAJ')">
+                <img src="https://listcarbrands.com/wp-content/uploads/2017/11/Bajaj-logo.jpg" alt="Bajaj">
+                <span>Bajaj</span>
+              </div>
+              <div class="brand-card" onclick="filterByBrand('HONDA')">
+                <img src="https://imgd.aeplcdn.com/0X0/bw/makes/honda20200511152343.jpg?q=80" alt="Honda">
+                <span>Honda</span>
+              </div>
+              <div class="brand-card" onclick="filterByBrand('YAMAHA')">
+                <img src="https://imgd.aeplcdn.com/0X0/bw/makes/yamaha20200508193220.jpg?q=80" alt="Yamaha">
+                <span>Yamaha</span>
+              </div>
+              <div class="brand-card" onclick="filterByBrand('HERO')">
+                <img src="https://imgd.aeplcdn.com/0X0/bw/makes/hero20200508192826.jpg?q=80" alt="Hero">
+                <span>Hero</span>
+              </div>
+              <div class="brand-card" onclick="filterByBrand('KTM')">
+                <img src="https://www.carlogos.org/car-logos/ktm-logo.png" alt="KTM">
+                <span>KTM</span>
+              </div>
+              <div class="brand-card" onclick="filterByBrand('TRIUMPH')">
+                <img src="https://www.carlogos.org/car-logos/triumph-logo.png" alt="Triumph">
+                <span>Triumph</span>
+              </div>
+              <div class="brand-card" onclick="filterByBrand('SUZUKI')">
+                <img src="https://imgd.aeplcdn.com/0X0/bw/makes/suzuki20200508193118.jpg?q=80" alt="Suzuki">
+                <span>Suzuki</span>
+              </div>
+              <div class="brand-card" onclick="filterByBrand('KAWASAKI')">
+                <img
+                  src="https://imgd.aeplcdn.com/0X0/n/cw/ec/17/brands/logos/kawasaki1656405887432.jpg?v=1656405887528&q=80"
+                  alt="Kawasaki">
+                <span>Kawasaki</span>
+              </div>
+            </div>
+
+            <div id="moreBrandsGrid" class="brand-grid-container" style="display:none; border-top:none;">
+              <div class="brand-card" onclick="filterByBrand('HARLEY DAVIDSON')">
+                <img src="https://www.carlogos.org/car-logos/harley-davidson-logo.png" alt="Harley">
+                <span>Harley Davidson</span>
+              </div>
+              <div class="brand-card" onclick="filterByBrand('BMW')">
+                <img src="https://imgd.aeplcdn.com/0X0/bw/makes/bmw20200508192553.jpg?q=80" alt="BMW">
+                <span>BMW</span>
+              </div>
+              <div class="brand-card" onclick="filterByBrand('DUCATI')">
+                <img src="https://www.carlogos.org/car-logos/ducati-logo.png" alt="Ducati">
+                <span>Ducati</span>
+              </div>
+              <div class="brand-card" onclick="filterByBrand('OLA ELECTRIC')">
+                <img src="https://1000logos.net/wp-content/uploads/2023/06/Ola-Electric-Logo.png" alt="Ola Electric">
+                <span>Ola Electric</span>
+              </div>
+              <div class="brand-card" onclick="filterByBrand('ATHER ENERGY')">
+                <img src="https://1000logos.net/wp-content/uploads/2023/12/Ather-Energy-Logo.jpg" alt="Ather Energy"
+                  style="mix-blend-mode: multiply;">
+                <span>Ather Energy</span>
+              </div>
+              <div class="brand-card" onclick="filterByBrand('YAMAHA INDIA')">
+                <img src="https://imgd.aeplcdn.com/0X0/bw/makes/yamaha20200508193220.jpg?q=80" alt="Yamaha India"
+                  onerror="this.onerror=null; this.outerHTML='<span style=\'font-weight:bold; font-size:20px; color:#aaa; margin:15px 0; height: 30px;\'>YAMAHA</span>';">
+                <span>Yamaha India</span>
+              </div>
+              <div class="brand-card" onclick="filterByBrand('REVOLT MOTORS')">
+                <img src="https://logo.clearbit.com/revoltmotors.com" alt="Revolt Motors"
+                  onerror="this.onerror=null; this.outerHTML='<span style=\'font-weight:bold; font-size:20px; color:#aaa; margin:15px 0; height: 30px;\'>REVOLT</span>';">
+                <span>Revolt Motors</span>
+              </div>
+              <div class="brand-card" onclick="filterByBrand('TORK MOTORS')">
+                <img src="https://logo.clearbit.com/torkmotors.com" alt="Tork Motors"
+                  onerror="this.onerror=null; this.outerHTML='<span style=\'font-weight:bold; font-size:20px; color:#aaa; margin:15px 0; height: 30px;\'>TORK</span>';">
+                <span>Tork Motors</span>
+              </div>
+              <div class="brand-card" onclick="filterByBrand('ULTRAVIOLETTE')">
+                <img src="https://logo.clearbit.com/ultraviolette.com" alt="Ultraviolette"
+                  onerror="this.onerror=null; this.outerHTML='<span style=\'font-weight:bold; font-size:20px; color:#aaa; margin:15px 0; height: 30px;\'>UV</span>';">
+                <span>Ultraviolette</span>
+              </div>
+              <div class="brand-card" onclick="filterByBrand('SIMPLE ENERGY')">
+                <img src="https://logo.clearbit.com/simpleenergy.in" alt="Simple Energy"
+                  onerror="this.onerror=null; this.outerHTML='<span style=\'font-weight:bold; font-size:20px; color:#aaa; margin:15px 0; height: 30px;\'>SIMPLE</span>';">
+                <span>Simple Energy</span>
+              </div>
+              <div class="brand-card" onclick="filterByBrand('HOP ELECTRIC')">
+                <img src="https://logo.clearbit.com/hopelectric.in" alt="Hop Electric"
+                  onerror="this.onerror=null; this.outerHTML='<span style=\'font-weight:bold; font-size:20px; color:#aaa; margin:15px 0; height: 30px;\'>HOP</span>';">
+                <span>Hop Electric</span>
+              </div>
+              <div class="brand-card" onclick="filterByBrand('OKAYA')">
+                <img src="https://logo.clearbit.com/okayaev.com" alt="Okaya"
+                  onerror="this.onerror=null; this.outerHTML='<span style=\'font-weight:bold; font-size:20px; color:#aaa; margin:15px 0; height: 30px;\'>OKAYA</span>';">
+                <span>Okaya</span>
+              </div>
+              <div class="brand-card" onclick="filterByBrand('KEEWAY')">
+                <img src="https://logo.clearbit.com/keeway.com" alt="Keeway"
+                  onerror="this.onerror=null; this.outerHTML='<span style=\'font-weight:bold; font-size:20px; color:#aaa; margin:15px 0; height: 30px;\'>KEEWAY</span>';">
+                <span>Keeway</span>
+              </div>
+              <div class="brand-card" onclick="filterByBrand('CF MOTO')">
+                <img src="https://logo.clearbit.com/cfmoto.com" alt="CF Moto"
+                  onerror="this.onerror=null; this.outerHTML='<span style=\'font-weight:bold; font-size:20px; color:#aaa; margin:15px 0; height: 30px;\'>CF MOTO</span>';">
+                <span>CF Moto</span>
+              </div>
+              <div class="brand-card" onclick="filterByBrand('BGAUSE')">
+                <img src="https://logo.clearbit.com/bgauss.com" alt="Bgauss"
+                  onerror="this.onerror=null; this.outerHTML='<span style=\'font-weight:bold; font-size:20px; color:#aaa; margin:15px 0; height: 30px;\'>BGAUSS</span>';">
+                <span>Bgauss</span>
+              </div>
+            </div>
+            <div class="view-more-brands-btn" id="showMoreBrandsGridBtn" onclick="toggleMoreBrandsGrid()">View More
+              Brands</div>
+          </div>
+        </div>
+
+        <!-- Right Pane: Main Gallery Engine -->
+        <div class="bike-grid" id="bikeGrid">
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- ================= MODALS & OVERLAYS ================= -->
+
+  <!-- 1. Single Bike Details Modal -->
+  <div class="modal" id="bikeModal">
+    <div class="modal-content" id="captureArea">
+      <div class="modal-header">
+        <h2 id="modalTitle">Bike Details</h2>
+        <button class="close-btn" onclick="closeModal()">×</button>
+      </div>
+
+      <!-- Primary Image Rendering Node -->
+      <div class="modal-image-container">
+        <button class="slider-btn prev" onclick="changeImage(-1)">❮</button>
+        <img id="modalMainImg" src="" onclick="openImageViewer(this.src)" alt="Bike Image">
+        <button class="slider-btn next" onclick="changeImage(1)">❯</button>
+      </div>
+
+      <!-- Base/Custom Variant Switching Engine -->
+      <div class="variant-selector-container"
+        style="padding: 10px 20px; display: flex; gap: 15px; justify-content: flex-start; align-items: center; flex-wrap: wrap;">
+        <div
+          style="display: flex; gap: 10px; align-items: center; background: #f8f9fa; padding: 10px 15px; border-radius: 12px; border: 1px solid #eef0f2; width: 100%; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
+          <label style="font-weight: bold; font-size: 13px; color: #1e3c72; white-space: nowrap;">MODEL:</label>
+          <select id="variantDropdown" onchange="switchVariant()"
+            style="width: 100%; padding: 6px 10px; border-radius: 8px; border: 1px solid #ddd; font-weight: bold; outline: none; cursor: pointer; background: white;">
+            <option value="base">Standard Variant</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Actions Container (Rev Engine, TCO Toggle, EMI Toggle) -->
+      <div style="padding: 10px 20px; display: flex; gap: 10px; flex-wrap: wrap;">
+        <button onclick="revEngine(event)"
+          style="background: #e63946; color: white; padding: 10px 15px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; flex: 1; min-width: 150px; display: flex; align-items: center; justify-content: center; gap: 8px; transition: 0.3s; box-shadow: 0 4px 6px rgba(230,57,70,0.2);">
+          🔊 Rev Engine
+        </button>
+        <button onclick="toggleTCO()"
+          style="background: #2b9348; color: white; padding: 10px 15px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; flex: 1; min-width: 150px; display: flex; align-items: center; justify-content: center; gap: 8px; transition: 0.3s; box-shadow: 0 4px 6px rgba(43,147,72,0.2);">
+          💰 5-Year Cost Predictor
+        </button>
+        <button onclick="toggleEMI()"
+          style="background: #1e3c72; color: white; padding: 10px 15px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; flex: 1; min-width: 150px; display: flex; align-items: center; justify-content: center; gap: 8px; transition: 0.3s; box-shadow: 0 4px 6px rgba(30,60,114,0.2);">
+          📊 EMI Calculator
+        </button>
+      </div>
+
+      <!-- TCO Calculator Area (Hidden by default) -->
+      <div id="tcoArea"
+        style="display: none; padding: 20px; background: #f8f9fa; margin: 10px 20px; border-radius: 12px; border: 1px solid #e2e8f0; animation: fadeIn 0.3s;">
+        <h3
+          style="color: #1e3c72; margin-top: 0; margin-bottom: 15px; font-size: 18px; border-bottom: 2px solid #cbd5e1; padding-bottom: 8px;">
+          💡 Total Cost of Ownership (TCO)</h3>
+        <div id="tcoContent" style="font-size: 14px; line-height: 1.6; color: #334155;"></div>
+      </div>
+
+      <!-- EMI Calculator Area (Hidden by default) -->
+      <div id="emiArea"
+        style="display: none; padding: 20px; background: #f8f9fa; margin: 10px 20px; border-radius: 12px; border: 1px solid #e2e8f0; animation: fadeIn 0.3s;">
+        <h3 style="color: #1e3c72; margin-top: 0; margin-bottom: 15px; font-size: 18px; border-bottom: 2px solid #cbd5e1; padding-bottom: 8px;">
+          📊 EMI Calculator</h3>
+        
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px;">
+          <div class="input-group">
+            <label style="font-size: 12px; font-weight: bold; color: #64748b;">Down Payment (₹)</label>
+            <input type="number" id="emiDownPayment" value="20000" oninput="calculateEMI()" 
+                   style="padding: 10px; border-radius: 8px; border: 1px solid #ddd; font-weight: bold;">
+          </div>
+          <div class="input-group">
+            <label style="font-size: 12px; font-weight: bold; color: #64748b;">Interest Rate (%)</label>
+            <input type="number" id="emiInterestRate" value="10.5" step="0.1" oninput="calculateEMI()"
+                   style="padding: 10px; border-radius: 8px; border: 1px solid #ddd; font-weight: bold;">
+          </div>
+          <div class="input-group">
+            <label style="font-size: 12px; font-weight: bold; color: #64748b;">Tenure (Months)</label>
+            <select id="emiTenure" onchange="calculateEMI()"
+                    style="padding: 10px; border-radius: 8px; border: 1px solid #ddd; font-weight: bold;">
+              <option value="12">12 Months (1 Year)</option>
+              <option value="24">24 Months (2 Year)</option>
+              <option value="36" selected>36 Months (3 Year)</option>
+              <option value="48">48 Months (4 Year)</option>
+              <option value="60">60 Months (5 Year)</option>
+            </select>
+          </div>
+        </div>
+
+        <div id="emiResult" style="background: white; padding: 15px; border-radius: 10px; border-left: 5px solid #1e3c72; text-align: center;">
+          <p style="margin: 0; font-size: 13px; color: #64748b; font-weight: bold;">ESTIMATED MONTHLY EMI</p>
+          <h2 id="emiAmountDisplay" style="margin: 5px 0 0; color: #1e3c72; font-size: 28px; font-weight: 800;">₹ 0</h2>
+        </div>
+      </div>
+
+      <!-- Dynamic Spec Tables Injection Point -->
+      <div id="modalBody" style="padding:20px;"></div>
+    </div>
+  </div>
+
+  <!-- 2. Multi-Bike Comparison Modal -->
+  <div id="compareModal" class="modal compare-overlay">
+
+    <!-- View 1: Selector View -->
+    <div id="compareSelectorView" class="compare-selector-card">
+      <span class="close-btn compare-close" onclick="closeCompareModal()">&times;</span>
+      <h2>Compare Bikes</h2>
+      <p class="compare-subtitle">Are you confused between multiple bikes to choose from? Not sure what features should
+        you compare? Don't worry, bike comparison was never so easy. MotoHub brings you an amazing tool 'Compare Bikes'
+        for bike comparison based on prices, mileage, power, performance, and 100s of other features. Compare your
+        favorite bikes to choose the one that suits your needs. Compare multiple bikes at once to find the best one.</p>
+
+      <div class="compare-slots-container">
+        <!-- Slot 0 -->
+         <div class="vs-badge">VS</div>
+        <div class="compare-slot" id="slot-0" onclick="openBikeSearchForSlot(0)">
+          <div class="slot-content">
+            <span class="bike-silhouette">🏍️</span>
+            <span class="add-text">⊕ Add Bike</span>
+          </div>
+        </div>
+        
+        <!-- Slot 1 -->
+         <div class="vs-badge">VS</div>
+        <div class="compare-slot" id="slot-1" onclick="openBikeSearchForSlot(1)">
+          <div class="slot-content">
+            <span class="bike-silhouette">🏍️</span>
+            <span class="add-text">⊕ Add Bike</span>
+          </div>
+        </div>
+        
+        <!-- Slot 2 -->
+         
+        <div class="compare-slot" id="slot-2" onclick="openBikeSearchForSlot(2)">
+          <div class="slot-content">
+            <span class="bike-silhouette">🏍️</span>
+            <span class="add-text">⊕ Add Bike</span>
+          </div>
+        </div>
+        
+        <!-- Slot 3 -->
+         
+        <div class="compare-slot" id="slot-3" onclick="openBikeSearchForSlot(3)">
+          <div class="slot-content">
+            <span class="bike-silhouette">🏍️</span>
+            <span class="add-text">⊕ Add Bike</span>
+          </div>
+        </div>  
+      </div>
+
+      <button class="compare-action-btn" onclick="executeComparison()">Compare</button>
+    </div>
+
+    <!-- View 2: Result Table View -->
+    <div id="compareResultView" class="modal-content result-card"
+      style="display:none; background:white; width:95%; max-width:900px; max-height:90vh; overflow-y:auto; border-radius:25px; padding:25px; position:relative;">
+      <span class="close-btn" onclick="closeCompareModal()"
+        style="position:absolute; top:20px; right:25px; font-size:35px; cursor:pointer;">&times;</span>
+      <button onclick="backToSelector()"
+        style="position:absolute; top:25px; left:25px; background:none; border:none; font-size:16px; font-weight:bold; cursor:pointer; color:#086ed4;">⬅
+        Back</button>
+
+      <div id="comparePrintArea" style="padding: 20px; background: white; border-radius: 15px; margin-top:20px;">
+        <h2 style="text-align:center; color:#086ed4; margin-bottom:20px;">Bike Comparison Report</h2>
+        <div id="compareTableArea"></div>
+      </div>
+
+      <div style="margin-top:25px; display:flex; flex-direction:column; gap:10px;">
+        <button onclick="downloadComparisonPDF()"
+          style="background:#086ed4; color:white; padding:18px; border:none; border-radius:15px; font-weight:bold; cursor:pointer; font-size:16px;">
+          Generate Comparison Report
+        </button>
+        <button onclick="clearComparison()"
+          style="background:none; color:#e63946; border:none; padding:10px; cursor:pointer; font-weight:bold;">
+          ❌ Reset & Close
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2.5 Bike Selection Modal for a Slot -->
+  <div id="bikeSelectorModal" class="modal"
+    style="display:none; position:fixed; z-index:2500; background:rgba(0,0,0,0.85); align-items:center; justify-content:center;">
+    <div class="modal-content"
+      style="background:#1e1e1e; color:white; width:90%; max-width:500px; border-radius:15px; padding:20px; position:relative;">
+      <span class="close-btn" onclick="closeBikeSelector()"
+        style="color:white; position:absolute; top:15px; right:20px; font-size:28px;">&times;</span>
+      <h3 style="margin-bottom:15px; color:#f1f5f9;">Select Bike to Compare</h3>
+      <input type="text" id="slotSearchInput" placeholder="Search brands or names..."
+        style="width:100%; padding:12px; border-radius:8px; border:1px solid #333; background:#2d2d2d; color:white; margin-bottom:15px;"
+        oninput="filterSlotBikes()">
+      <div id="slotBikeList" style="max-height: 300px; overflow-y:auto; display:flex; flex-direction:column; gap:10px;">
+        <!-- Injected options -->
+      </div>
+    </div>
+  </div>
+
+  <!-- 3. Fullscreen Image Viewer Modal -->
+  <div id="imageViewer" class="image-viewer-overlay" onclick="closeImageViewer()">
+    <!-- Top-Level Controls -->
+    <button class="viewer-close-btn" onclick="event.stopPropagation(); closeImageViewer()">×</button>
+    <button id="viewerImagesBtn" onclick="event.stopPropagation(); toggleColorBar()"
+      class="viewer-top-btn">COLOUR</button>
+    <button class="viewer-download-btn" onclick="event.stopPropagation(); downloadCurrentFullImage()">
+      <span style="font-size: 24px;">🖨️</span>
+    </button>
+
+    <!-- Transparent Navigation Panes -->
+    <div class="nav-zone left-zone" onclick="event.stopPropagation(); changeImage(-1)"></div>
+    <div class="nav-zone right-zone" onclick="event.stopPropagation(); changeImage(1)"></div>
+
+    <!-- Core Preview Element -->
+    <img id="fullImage" src="" alt="Bike View">
+
+    <!-- Bottom Interactive Interface -->
+    <div id="viewerColorContainer" onclick="event.stopPropagation()" style="display: none;"></div>
+    <div id="viewerIndicator" class="colour-count"></div>
+  </div>
+
+
+
+  <!-- Hidden Audio Elements for Exhaust Revving -->
+  <!-- We use standard placeholder mixkit engine sounds, user can replace URLs later -->
+  <audio id="revSoundPetrol" src="https://assets.mixkit.co/active_storage/sfx/1547/1547-preview.mp3"
+    preload="auto"></audio>
+  <audio id="revSoundElectric" src="https://assets.mixkit.co/active_storage/sfx/2836/2836-preview.mp3"
+    preload="auto"></audio>
+
+  <!-- ================= FOOTER ================= -->
+  <footer class="pro-footer">
+    <div class="footer-container">
+      <div class="footer-section">
+        <h3>ABOUT MOTOHUB</h3>
+        <p>At MotoHub, you can compare your dream bike with accurate specifications and price details.
+          Professional bike analytics is now in your hands! 🚀</p>
+      </div>
+
+      <div class="footer-section">
+        <h3>QUICK LINKS</h3>
+        <ul>
+          <li onclick="resetToHome()">🏠 Home</li>
+          <li onclick="toggleMenu()">🏍 Bike Brands</li>
+          <li onclick="alert('Service Centers feature coming soon!')">🛠 Service Centers</li>
+          <li onclick="alert('Email us at support@dkbikeworld.com')">📝 Contact Us</li>
+        </ul>
+      </div>
+
+      <div class="footer-section">
+        <h3>CONTACT US</h3>
+        <p>📧 Email: support@dkbikeworld.com</p>
+        <p>📍 Salem, Tamil Nadu, India</p>
+        <div class="social-icons">
+          <span>📘</span> <span>📸</span> <span>🐦</span> <span>📺</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <p>&copy; 2026 MotoHub | Built with ❤️ by DineshKumar</p>
+    </div>
+  </footer>
+
+  <!-- ================= APP LOGIC ================= -->
+  <script src="script.js"></script>
+
+</body>
+
+</html>
